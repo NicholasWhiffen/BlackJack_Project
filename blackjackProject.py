@@ -7,11 +7,11 @@ MONEY = "money.txt"
 
 def createDeck():
     suits = ["Hearts", "Spades", "Clubs", "Diamonds"]
-    numbers = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
+    numbers = ["Ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King"]
     deck = []
     for suit in suits:
         for number in numbers:
-            deck.append(suit + " of " + number)
+            deck.append(str(number) + " of " + suit)
     return deck
 
 def readMoney():
@@ -34,27 +34,33 @@ def writeMoney(money):
         for item in money:
             file.write(item + "\n")
 
-def deal(cards):
+def deal(deck):
+    hand = []
     for card in range(2):
-        hand = []
-        card = []
-        random.shuffle(cards[0])
-        random.shuffle(cards[1])
-        cardValue = cards[0].pop()
-        cardSuit = cards[1].pop()
-        card.append(cardSuit)
-        card.append(cardValue)
+        random.shuffle(deck)
+        card = deck.pop()
         hand.append(card)
     return hand
+
+def addCard(hand, deck):
+    newCard = deck.pop()
+    hand.append(newCard)
+    return hand
+
+
     
 
 def main():
     deck = createDeck()
     money = readMoney()
-    hand = deal(cards)
-    hand = deal(cards)
-    print(hand)
-
+    playerHand = deal(deck)
+    dealerHand = deal(deck)
+    print(playerHand)
+    print(dealerHand)
+    addCard(playerHand, deck)
+    addCard(dealerHand, deck)
+    print(playerHand)
+    print(dealerHand)
 
 if __name__ == "__main__":
     main()  
