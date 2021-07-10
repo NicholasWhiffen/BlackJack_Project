@@ -7,15 +7,15 @@ def readMoney():
             with open(MONEY, "r") as file:
                 for line in file:
                     line = line.replace("\n", "")
-                    money.append(line)
+                    money.append(int(line))
             return money
         except FileNotFoundError:
             print("Could not find money file!")
             print("Starting new money file...\n")
             with open(MONEY, "w") as file:
-                file.write("")
+                file.write("0")
 
 def writeMoney(money):
     with open(MONEY, "w") as file:
         for item in money:
-            file.write(item + "\n")
+            file.write(str(item) + "\n")
