@@ -7,7 +7,7 @@ def readMoney():
             with open(MONEY, "r") as file:
                 for line in file:
                     line = line.replace("\n", "")
-                    money.append(int(line))
+                    money.append(float(line))
             return money
         except FileNotFoundError:
             print("Could not find money file!")

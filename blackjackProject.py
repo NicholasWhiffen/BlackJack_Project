@@ -2,9 +2,6 @@ import random
 import db
 import sys
 
-print("BLACKJACK!")
-print("Blackjack payout is 3:2")
-
 def createDeck():
     suits = ["Hearts", "Spades", "Clubs", "Diamonds"]
     numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King", "Ace"]
@@ -51,24 +48,17 @@ def getValue(hand):
     return totalValue
 
 def showHand(hand):
-    print("YOUR CARDS:")
     for card in hand:
         print(str(card[2]) + " of " + card[1])
     print()
 
-#def checkWin(hand):
-    #value = getValue(hand)
-    #if value > 21:
-        #print("BUST! You lose.")
-        #print()#
-
 def checkMoney(money):
-    if len(money) == 0 or money[0] == 0:
+    if len(money) == 0 or money[0] < 5:
         while True:
             try:
-                addMoney = input("Your account balance is zero. Would you like to add more money? (y/n): ")
+                addMoney = input("Your account balance is does not have enough for minimum bet. Would you like to add more money? (y/n): ")
                 if addMoney.lower() == "y":
-                    amountMoneyAdded = int(input("How much money would you like to add?: "))
+                    amountMoneyAdded = float(input("How much money would you like to add?: "))
                     money.append(amountMoneyAdded)
                     print(str(amountMoneyAdded) + " was added to your account.")
                     db.writeMoney(money)
@@ -84,7 +74,7 @@ def checkMoney(money):
 def addMoney(money):
     while True:
         try:
-            amountMoneyAdded = int(input("How much money would you like to add?: "))
+            amountMoneyAdded = float(input("How much money would you like to add?: "))
             money[0] += amountMoneyAdded
             print(str(amountMoneyAdded) + " was added to your account.")
             db.writeMoney(money)
@@ -93,35 +83,117 @@ def addMoney(money):
         except ValueError:
             print("Please enter valid integer.")
 
+def makeBet(money):
+    while True:
+        try:
+            checkMoney(money)
+            bet = float(input("Enter bet amount: "))
+            if bet < 5 or bet > 1000:
+                print("Bet must be between 5 and 1000")
+            elif bet > money[0]:
+                print("Not enough money to make bet. Choose again")
+            else:
+                money[0] -= bet
+                db.writeMoney(money)
+                return bet
+        except ValueError:
+            print("Enter a valid integer")
+
+def dealerMoves(hand, deck):
+    while True:
+        value = getValue(hand)
+        if value < 17:
+            addCard(hand, deck)
+        else:
+            break
+
+def checkWin(pHand, dHand, money, bet):
+    playerScore = getValue(pHand)
+    dealerScore = getValue(dHand)
+    if playerScore > 21:
+        print("YOUR POINTS: " + str(playerScore))
+        print("DEALER POINTS: " + str(dealerScore))
+        print()
+        print("BUST! You lose.")
+    elif dealerScore > 21:
+        print("YOUR POINTS: " + str(playerScore))
+        print("DEALER POINTS: " + str(dealerScore))
+        print()
+        print("DEALER BUST! You win.")
+        money[0] + (bet * 1.5)
+        db.writeMoney(money)
+    elif dealerScore < 21 and playerScore < 21:
+        if playerScore > dealerScore:
+            print("YOUR POINTS: " + str(playerScore))
+            print("DEALER POINTS: " + str(dealerScore))
+            print()
+            print("You win.")
+            money[0] + (bet * 1.5)
+            db.writeMoney(money)
+        else:
+            print("YOUR POINTS: " + str(playerScore))
+            print("DEALER POINTS: " + str(dealerScore))
+            print()
+            print("You lose.")
+    else:
+        print("YOUR POINTS: " + str(playerScore))
+        print("DEALER POINTS: " + str(dealerScore))
+        print()
+        print("Draw.")
+        money[0] + bet
+        db.writeMoney(money)
 
 
 def main():
-
-    #Test code
-    deck = createDeck()
     money = db.readMoney()
     checkMoney(money)
-    print(money[0])
-    playerHand = deal(deck)
-    dealerHand = deal(deck)
-    print(playerHand)
-    print(dealerHand)
-    addMoney(money)
-    showHand(playerHand)
 
-    #Game code
-    while True:
-        choice = input("Hit or stand? (hit/stand): ")
+    print("BLACKJACK!")
+    print("Blackjack payout is 3:2")
+
+    playAgain = "y"
+    while playAgain.lower() == "y":
+        deck = createDeck()
+        print("Money: " + str(money[0]))
+        bet = makeBet(money)
+        print("Bet amount: " + str(bet))
         print()
-        if choice.lower() == "hit":
-            addCard(playerhand, deck)
-            showHand(playerhand)
-            value = getValue(hand)
-            if value > 21:
-                print("BUST! You lose.")
-                print("Money: " + str(money))
-                break
-        elif choice.lower() == "stand":
+
+        dealerHand = deal(deck)
+        playerhand = deal(deck)
+        print("DEALER'S SHOW CARD:")
+        print(str(dealerHand[0][2]) + " of " + str(dealerHand[0][1]) + "\n")
+        print("YOUR CARDS:")
+        showHand(playerhand)
+
+        while True:
+            try:
+                choice = input("Hit or stand? (hit/stand): ")
+                print()
+                if choice.lower() == "hit":
+                    addCard(playerhand, deck)
+                    showHand(playerhand)
+                    value = getValue(playerhand)
+                    if value > 21:
+                        break
+                elif choice.lower() == "stand":
+                    break
+                else:
+                    print("Please enter hit or stand")
+            except ValueError:
+                print("Please enter hit or stand")
+        dealerMoves(dealerHand, deck)
+        checkWin(playerhand, dealerHand, money, bet)
+    while True:
+        try:
+            playAgain = input("Play again? (y/n): ")
+        except ValueError:
+            print("Enter y or n")
+            
+
+        
+
+
 
 if __name__ == "__main__":
     main()  
