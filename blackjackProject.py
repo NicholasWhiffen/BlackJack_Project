@@ -102,7 +102,7 @@ def makeBet(money):
 def dealerMoves(hand, deck):
     while True:
         value = getValue(hand)
-        if value < 17:
+        if value <= 17:
             addCard(hand, deck)
         else:
             break
@@ -112,7 +112,6 @@ def checkWin(pHand, dHand, money, bet):
     dealerScore = getValue(dHand)
     if playerScore > 21:
         print("YOUR POINTS: " + str(playerScore))
-        print("DEALER POINTS: " + str(dealerScore))
         print()
         print("BUST! You lose.\n")
     elif dealerScore > 21:
