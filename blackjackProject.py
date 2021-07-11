@@ -37,7 +37,7 @@ def getValue(hand):
         if card[0] == 11 or card[0] == 12 or card[0] == 13:
             totalValue += 10
         #Value of Ace
-        if card[0] == 14:
+        elif card[0] == 14:
             if (totalValue + 11) > 21:
                 totalValue += 1
             else:
@@ -114,33 +114,33 @@ def checkWin(pHand, dHand, money, bet):
         print("YOUR POINTS: " + str(playerScore))
         print("DEALER POINTS: " + str(dealerScore))
         print()
-        print("BUST! You lose.")
+        print("BUST! You lose.\n")
     elif dealerScore > 21:
         print("YOUR POINTS: " + str(playerScore))
         print("DEALER POINTS: " + str(dealerScore))
         print()
-        print("DEALER BUST! You win.")
-        money[0] + (bet * 1.5)
+        print("DEALER BUST! You win.\n")
+        money[0] += (bet * 1.5)
         db.writeMoney(money)
     elif dealerScore < 21 and playerScore < 21:
         if playerScore > dealerScore:
             print("YOUR POINTS: " + str(playerScore))
             print("DEALER POINTS: " + str(dealerScore))
             print()
-            print("You win.")
-            money[0] + (bet * 1.5)
+            print("You win.\n")
+            money[0] += (bet * 1.5)
             db.writeMoney(money)
         else:
             print("YOUR POINTS: " + str(playerScore))
             print("DEALER POINTS: " + str(dealerScore))
             print()
-            print("You lose.")
-    else:
+            print("You lose.\n")
+    elif dealerScore == playerScore:
         print("YOUR POINTS: " + str(playerScore))
         print("DEALER POINTS: " + str(dealerScore))
         print()
         print("Draw.")
-        money[0] + bet
+        money[0] += bet
         db.writeMoney(money)
 
 
@@ -184,16 +184,18 @@ def main():
                 print("Please enter hit or stand")
         dealerMoves(dealerHand, deck)
         checkWin(playerhand, dealerHand, money, bet)
-    while True:
-        try:
-            playAgain = input("Play again? (y/n): ")
-        except ValueError:
-            print("Enter y or n")
+        while True:
+            try:
+                playAgain = input("Play again? (y/n): ")
+                if playAgain.lower() == "y":
+                    break
+                elif playAgain.lower() == "n":
+                    break
+                else:
+                    print("Must enter y or n")
+            except ValueError:
+                print("Must enter y or n")
+    print("Come back soon!\nBye!")
             
-
-        
-
-
-
 if __name__ == "__main__":
     main()  
