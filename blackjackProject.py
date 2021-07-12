@@ -59,12 +59,12 @@ def checkMoney(money):
                 addMoney = input("Your account balance is does not have enough for minimum bet. Would you like to add more money? (y/n): ")
                 if addMoney.lower() == "y":
                     amountMoneyAdded = float(input("How much money would you like to add?: "))
-                    money.append(amountMoneyAdded)
-                    print(str(amountMoneyAdded) + " was added to your account.")
+                    money[0] += amountMoneyAdded
+                    print(str(amountMoneyAdded) + " was added to your account.\n")
                     db.writeMoney(money)
                     break
                 elif addMoney.lower() == "n":
-                    print("Thank you for playing.")
+                    print("\nThank you for playing.")
                     sys.exit()
                 else:
                     print("Please enter y or n.")
@@ -87,6 +87,7 @@ def makeBet(money):
     while True:
         try:
             checkMoney(money)
+            print("Money: " + str(money[0]))
             bet = float(input("Enter bet amount: "))
             if bet < 5 or bet > 1000:
                 print("Bet must be between 5 and 1000")
@@ -121,6 +122,13 @@ def checkWin(pHand, dHand, money, bet):
         print("DEALER BUST! You win.\n")
         money[0] += (bet * 1.5)
         db.writeMoney(money)
+    elif dealerScore == playerScore:
+        print("YOUR POINTS: " + str(playerScore))
+        print("DEALER POINTS: " + str(dealerScore))
+        print()
+        print("Draw.")
+        money[0] += bet
+        db.writeMoney(money)
     elif dealerScore < 21 and playerScore < 21:
         if playerScore > dealerScore:
             print("YOUR POINTS: " + str(playerScore))
@@ -134,26 +142,20 @@ def checkWin(pHand, dHand, money, bet):
             print("DEALER POINTS: " + str(dealerScore))
             print()
             print("You lose.\n")
-    elif dealerScore == playerScore:
-        print("YOUR POINTS: " + str(playerScore))
-        print("DEALER POINTS: " + str(dealerScore))
-        print()
-        print("Draw.")
-        money[0] += bet
-        db.writeMoney(money)
 
 
 def main():
     money = db.readMoney()
     checkMoney(money)
 
-    print("BLACKJACK!")
-    print("Blackjack payout is 3:2")
+    
 
     playAgain = "y"
     while playAgain.lower() == "y":
+        print("\nBLACKJACK!")
+        print("Blackjack payout is 3:2\n")
+
         deck = createDeck()
-        print("Money: " + str(money[0]))
         bet = makeBet(money)
         print("Bet amount: " + str(bet))
         print()
