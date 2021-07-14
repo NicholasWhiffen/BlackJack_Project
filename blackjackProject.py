@@ -116,6 +116,8 @@ def checkWin(pHand, dHand, money, bet):
         print()
         print("BUST! You lose.\n")
     elif dealerScore > 21:
+        print("DEALER'S CARDS:")
+        showHand(dHand)
         print("YOUR POINTS: " + str(playerScore))
         print("DEALER POINTS: " + str(dealerScore))
         print()
@@ -123,14 +125,19 @@ def checkWin(pHand, dHand, money, bet):
         money[0] += (bet * 1.5)
         db.writeMoney(money)
     elif dealerScore == playerScore:
+        print("DEALER'S CARDS:")
+        showHand(dHand)
         print("YOUR POINTS: " + str(playerScore))
         print("DEALER POINTS: " + str(dealerScore))
         print()
-        print("Draw.")
+        print("Draw.\n")
         money[0] += bet
         db.writeMoney(money)
-    elif dealerScore < 21 and playerScore < 21:
+    elif dealerScore <= 21 and playerScore <= 21:
         if playerScore > dealerScore:
+            print("DEALER'S CARDS:")
+            showHand(dHand)
+            print()
             print("YOUR POINTS: " + str(playerScore))
             print("DEALER POINTS: " + str(dealerScore))
             print()
@@ -138,6 +145,8 @@ def checkWin(pHand, dHand, money, bet):
             money[0] += (bet * 1.5)
             db.writeMoney(money)
         else:
+            print("DEALER'S CARDS:")
+            showHand(dHand)
             print("YOUR POINTS: " + str(playerScore))
             print("DEALER POINTS: " + str(dealerScore))
             print()
@@ -172,12 +181,17 @@ def main():
                 choice = input("Hit or stand? (hit/stand): ")
                 print()
                 if choice.lower() == "hit":
+                    print("DEALER'S SHOW CARD:")
+                    print(str(dealerHand[0][2]) + " of " + str(dealerHand[0][1]) + "\n")
                     addCard(playerhand, deck)
+                    print("YOUR CARDS:")
                     showHand(playerhand)
                     value = getValue(playerhand)
                     if value > 21:
                         break
                 elif choice.lower() == "stand":
+                    print("YOUR CARDS:")
+                    showHand(playerhand)
                     break
                 else:
                     print("Please enter hit or stand")
@@ -196,7 +210,7 @@ def main():
                     print("Must enter y or n")
             except ValueError:
                 print("Must enter y or n")
-    print("Come back soon!\nBye!")
+    print("\nCome back soon!\nBye!")
             
 if __name__ == "__main__":
     main()  
